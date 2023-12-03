@@ -1,0 +1,25 @@
+{
+  "name": "eslint-plugin-grules",
+  "author": "Gürgün Dayıoğlu",
+  "license": "MIT",
+  "version": "0.0.0",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {},
+  "dependencies": {
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-n": "^16.3.1",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-unicorn": "^49.0.0",
+    "prettier": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gurgunday/eslint-plugin-grules.git"
+  }
+}
