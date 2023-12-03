@@ -12,35 +12,35 @@ module.exports = {
           node.arguments.length === 1
         ) {
           const arg = node.arguments[0];
-          let message, replacement;
+          let message, fix;
 
           if (arg.type === "Literal" && typeof arg.value === "number") {
+            let replacement;
+
+            message = `Use index-based access ${replacement} instead of '.at(${arg.value})'`;
+
             if (arg.value >= 0) {
-              // Positive index
               replacement = `[${arg.value}]`;
-              message = `Use index-based access ${replacement} instead of '.at(${arg.value})'`;
             } else {
-              // Negative index
-              const index = Math.abs(arg.value);
-              replacement = `[${node.callee.object.name}.length - ${index}]`;
-              message = `Use index-based access ${replacement} instead of '.at(${arg.value})'`;
+              replacement = `[${node.callee.object.name}.length - ${Math.abs(
+                arg.value
+              )}]`;
             }
+
+            fix = (fixer) => {
+              return fixer.replaceText(
+                node,
+                `${node.callee.object.name}${replacement}`
+              );
+            };
           } else {
-            // Complex expression
-            replacement = `[${node.callee.object.name}.length - index]`;
-            message =
-              "Use index-based access with length minus index instead of '.at(index)'";
+            message = "Use index-based access instead of '.at()'";
           }
 
           context.report({
             node,
             message: message,
-            fix: function (fixer) {
-              return fixer.replaceText(
-                node,
-                `${node.callee.object.name}${replacement}`
-              );
-            },
+            fix,
           });
         }
       },
