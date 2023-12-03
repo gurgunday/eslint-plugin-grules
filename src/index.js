@@ -23,6 +23,7 @@ module.exports = {
         "n/prefer-global/process": ["error", "never"],
 
         "unicorn/prefer-at": "off",
+        "unicorn/prevent-abbreviations": "off",
         "unicorn/no-abusive-eslint-disable": "off",
         "unicorn/no-null": "off",
 
