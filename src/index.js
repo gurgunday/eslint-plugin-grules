@@ -23,6 +23,7 @@ module.exports = {
         "n/prefer-global/process": ["error", "never"],
 
         "unicorn/prefer-at": "off",
+        "unicorn/no-abusive-eslint-disable": "off",
         "unicorn/no-null": "off",
 
         "array-callback-return": "error",
@@ -91,12 +92,12 @@ module.exports = {
         "no-implicit-globals": "off",
         "no-implied-eval": "error",
         "no-inline-comments": "off",
-        "no-invalid-this": "error",
+        "no-invalid-this": "off",
         "no-iterator": "error",
         "no-lone-blocks": "error",
         "no-lonely-if": "error",
         "no-loop-func": "error",
-        "no-magic-numbers": "error",
+        "no-magic-numbers": "off",
         "no-multi-assign": ["error", { ignoreNonDeclaration: true }],
         "no-multi-str": "error",
         "no-negated-condition": "error",

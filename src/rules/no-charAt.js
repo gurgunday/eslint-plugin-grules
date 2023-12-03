@@ -1,4 +1,7 @@
 module.exports = {
+  meta: {
+    fixable: "code",
+  },
   create: (context) => {
     return {
       CallExpression: (node) => {

@@ -1,6 +1,9 @@
 // File: rules/no-at-method.js
 
 module.exports = {
+  meta: {
+    fixable: "code",
+  },
   create: (context) => {
     return {
       CallExpression: (node) => {
