@@ -12,36 +12,40 @@ module.exports = {
           node.arguments.length === 1
         ) {
           const arg = node.arguments[0];
-          let message, fix;
+          const isUnaryNumber =
+            arg.type === "UnaryExpression" &&
+            (arg.operator === "+" || arg.operator === "-") &&
+            arg.argument.type === "Literal" &&
+            typeof arg.argument.value === "number";
 
-          if (arg.type === "Literal" && typeof arg.value === "number") {
-            let replacement;
+          let message;
+          let fix = null;
 
-            message = `Use index-based access ${replacement} instead of '.at(${arg.value})'`;
+          if (
+            (arg.type === "Literal" && typeof arg.value === "number") ||
+            isUnaryNumber
+          ) {
+            const index = isUnaryNumber
+              ? arg.operator === "+"
+                ? +arg.argument.value
+                : -arg.argument.value
+              : arg.value;
+            const replacement =
+              index >= 0
+                ? `[${index}]`
+                : `[${node.callee.object.name}.length - ${Math.abs(index)}]`;
 
-            if (arg.value >= 0) {
-              replacement = `[${arg.value}]`;
-            } else {
-              replacement = `[${node.callee.object.name}.length - ${Math.abs(
-                arg.value
-              )}]`;
-            }
-
-            fix = (fixer) => {
-              return fixer.replaceText(
+            message = `Use index-based access ${replacement} instead of '.at(${index})'`;
+            fix = (fixer) =>
+              fixer.replaceText(
                 node,
                 `${node.callee.object.name}${replacement}`
               );
-            };
           } else {
             message = "Use index-based access instead of '.at()'";
           }
 
-          context.report({
-            node,
-            message: message,
-            fix,
-          });
+          context.report({ node, message, fix });
         }
       },
     };
