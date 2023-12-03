@@ -27,7 +27,7 @@ module.exports = {
         "unicorn/no-abusive-eslint-disable": "off",
         "unicorn/no-null": "off",
 
-        "array-callback-return": "error",
+        "array-callback-return": ["error", { allowImplicit: true }],
         "no-await-in-loop": "warn",
         "no-constant-binary-expression": "error",
         "no-constructor-return": "error",
@@ -72,7 +72,7 @@ module.exports = {
         "max-nested-callbacks": "off",
         "max-params": "off",
         "max-statements": "off",
-        "multiline-comment-style": ["error", "starred-block"],
+        "multiline-comment-style": "off",
         "new-cap": "error",
         "no-alert": "error",
         "no-array-constructor": "error",
@@ -131,9 +131,9 @@ module.exports = {
           "MethodDefinition[kind='set']",
           "FunctionDeclaration",
           "VariableDeclaration[kind='var']",
+          "SequenceExpression",
           "LabeledStatement",
           "WithStatement",
-          "SequenceExpression",
         ],
         "no-return-assign": "error",
         "no-script-url": "error",
@@ -147,7 +147,7 @@ module.exports = {
         "no-unused-expressions": [
           "error",
           { allowShortCircuit: true, allowTernary: true },
-        ], // hmm not sure
+        ],
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
         "no-useless-concat": "error",

@@ -2,7 +2,6 @@ const comparisonOperators = ["==", "===", "!=", "!==", ">", "<", ">=", "<="];
 
 const enforceExplicitComparisonRecursively = (context, node) => {
   if (node.type === "LogicalExpression") {
-    // Recursively enforce explicit comparisons on both sides of the logical expression
     enforceExplicitComparisonRecursively(context, node.left);
     enforceExplicitComparisonRecursively(context, node.right);
   } else if (
