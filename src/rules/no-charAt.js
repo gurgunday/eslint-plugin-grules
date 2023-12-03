@@ -25,7 +25,7 @@ module.exports = {
           context.report({
             node,
             message: `Use index-based access ${replacement} instead of '.charAt()'`,
-            fix: function (fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(
                 node,
                 `${node.callee.object.name}${replacement}`

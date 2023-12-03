@@ -36,11 +36,12 @@ module.exports = {
                 : `[${node.callee.object.name}.length - ${Math.abs(index)}]`;
 
             message = `Use index-based access ${replacement} instead of '.at(${index})'`;
-            fix = (fixer) =>
-              fixer.replaceText(
+            fix = (fixer) => {
+              return fixer.replaceText(
                 node,
                 `${node.callee.object.name}${replacement}`
               );
+            };
           } else {
             message = "Use index-based access instead of '.at()'";
           }

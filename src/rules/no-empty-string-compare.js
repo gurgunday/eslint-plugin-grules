@@ -1,16 +1,10 @@
 module.exports = {
   meta: {
-    type: "suggestion",
-    docs: {
-      description:
-        "enforce checking string length instead of comparing with an empty string",
-    },
     fixable: "code",
-    schema: [], // no options
   },
-  create(context) {
+  create: (context) => {
     return {
-      BinaryExpression(node) {
+      BinaryExpression: (node) => {
         if (
           (node.operator === "===" || node.operator === "!==") &&
           ((node.left.type === "Literal" && node.left.value === "") ||
@@ -28,7 +22,7 @@ module.exports = {
           context.report({
             node,
             message: `Use '${replacement}' instead of comparing directly with an empty string`,
-            fix: function (fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(node, replacement);
             },
           });

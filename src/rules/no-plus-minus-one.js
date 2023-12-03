@@ -1,15 +1,10 @@
 module.exports = {
   meta: {
-    type: "suggestion",
-    docs: {
-      description: "disallow += 1 and -= 1, suggest ++ or -- instead",
-    },
     fixable: "code",
-    schema: [], // no options
   },
-  create(context) {
+  create: (context) => {
     return {
-      AssignmentExpression(node) {
+      AssignmentExpression: (node) => {
         if (node.operator === "+=" && node.right.value === 1) {
           context.report({
             node,
@@ -22,7 +17,7 @@ module.exports = {
           context.report({
             node,
             message: "Use '--' instead of '-= 1'",
-            fix: function (fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(node, `--${node.left.name}`);
             },
           });

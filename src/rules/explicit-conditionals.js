@@ -7,7 +7,7 @@ const enforceExplicitComparisonRecursively = (context, node) => {
   } else if (
     !(
       node.type === "BinaryExpression" &&
-      comparisonOperators.includes(node.operator)
+      comparisonOperators.includes(node.operator) === true
     )
   ) {
     context.report({
