@@ -20,11 +20,10 @@ module.exports = {
       rules: {
         "prettier/prettier": "error",
 
-        "grules/no-at-identifier": "error",
         "grules/no-charAt": "error",
-        "grules/no-empty-string-compare": "error",
-        "grules/no-plus-minus-one": "error",
-        "grules/prefer-arrow-functions": "error",
+        "grules/prefer-inc-dec": "error",
+        "grules/prefer-index-access": "error",
+        "grules/prefer-string-length-comparison": "error",
 
         "unicorn/better-regex": "error",
         "unicorn/consistent-destructuring": "error",
@@ -97,7 +96,7 @@ module.exports = {
         "dot-notation": "error",
         eqeqeq: ["error", "always", { null: "ignore" }],
         "func-name-matching": "error",
-        "func-names": ["error", "as-needed"],
+        "func-names": ["error", "never"],
         "guard-for-in": "error",
         "id-denylist": "off",
         "id-length": "off",
@@ -184,7 +183,7 @@ module.exports = {
         "no-throw-literal": "error",
         "no-undef-init": "off",
         "no-undefined": "off",
-        "no-underscore-dangle": "error",
+        "no-underscore-dangle": "off",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
         "no-useless-call": "error",
@@ -228,11 +227,10 @@ module.exports = {
     },
   },
   rules: {
-    "explicit-conditionals": require("./rules/explicit-conditionals.js"),
-    "no-at-identifier": require("./rules/no-at-identifier.js"),
     "no-charAt": require("./rules/no-charAt.js"),
-    "no-empty-string-compare": require("./rules/no-empty-string-compare.js"),
-    "no-plus-minus-one": require("./rules/no-plus-minus-one.js"),
-    "prefer-arrow-functions": require("./rules/prefer-arrow-functions.js"),
+    "prefer-explicit-conditionals": require("./rules/prefer-explicit-conditionals.js"),
+    "prefer-inc-dec": require("./rules/prefer-inc-dec.js"),
+    "prefer-index-access": require("./rules/prefer-index-access.js"),
+    "prefer-string-length-comparison": require("./rules/prefer-string-length-comparison.js"),
   },
 };
