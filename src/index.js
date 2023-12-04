@@ -90,7 +90,7 @@ module.exports = {
         "class-methods-use-this": "error",
         complexity: "off",
         "consistent-return": "off",
-        "consistent-this": "error",
+        "consistent-this": "off",
         curly: "error",
         "default-case": "off",
         "default-param-last": "off",
