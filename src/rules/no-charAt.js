@@ -1,6 +1,6 @@
 module.exports = {
   meta: {
-    fixable: "code", // Or "whitespace" if it's just about spaces, tabs, etc.
+    fixable: "code",
   },
   create: function (context) {
     return {
