@@ -21,6 +21,7 @@ module.exports = {
         "prettier/prettier": "error",
 
         "grules/no-charAt": "error",
+        "grules/prefer-arrow-functions": "error",
         "grules/prefer-inc-dec": "error",
         "grules/prefer-index-access": "error",
         "grules/prefer-string-length-comparison": "error",
@@ -228,6 +229,7 @@ module.exports = {
   },
   rules: {
     "no-charAt": require("./rules/no-charAt.js"),
+    "prefer-arrow-functions": require("./rules/prefer-arrow-functions.js"),
     "prefer-explicit-conditionals": require("./rules/prefer-explicit-conditionals.js"),
     "prefer-inc-dec": require("./rules/prefer-inc-dec.js"),
     "prefer-index-access": require("./rules/prefer-index-access.js"),
