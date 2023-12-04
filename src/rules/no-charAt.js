@@ -18,7 +18,6 @@ module.exports = {
           if (argument && argument.type === "Literal") {
             replacement = `${objectText}[${argument.raw}]`;
           } else {
-            // For non-literal arguments, use the expression as is
             replacement = `${objectText}[${context
               .getSourceCode()
               .getText(argument)}]`;
