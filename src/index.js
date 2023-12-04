@@ -63,7 +63,6 @@ module.exports = {
         "unicorn/prefer-string-trim-start-end": "error",
         "unicorn/prefer-switch": "error",
         "unicorn/prefer-type-error": "error",
-
         "unicorn/prefer-ternary": "error",
         "unicorn/text-encoding-identifier-case": "error",
 
