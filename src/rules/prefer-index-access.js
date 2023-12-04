@@ -2,51 +2,58 @@ module.exports = {
   meta: {
     fixable: "code",
   },
-  create: (context) => {
+  create: function (context) {
     return {
-      CallExpression: (node) => {
+      CallExpression(node) {
         if (
           node.callee.type === "MemberExpression" &&
           node.callee.property.name === "at" &&
-          node.callee.object.type === "Identifier" &&
-          node.arguments.length === 1
+          (node.callee.object.type === "Identifier" ||
+            node.callee.object.type === "MemberExpression")
         ) {
-          const arg = node.arguments[0];
-          const isUnaryNumber =
-            arg.type === "UnaryExpression" &&
-            (arg.operator === "+" || arg.operator === "-") &&
-            arg.argument.type === "Literal" &&
-            typeof arg.argument.value === "number";
-
-          let message;
-          let fix = null;
+          const objectText = context
+              .getSourceCode()
+              .getText(node.callee.object),
+            argument = node.arguments[0];
+          let value;
 
           if (
-            (arg.type === "Literal" && typeof arg.value === "number") ||
-            isUnaryNumber
+            argument.type === "UnaryExpression" &&
+            typeof argument.argument.value === "number"
           ) {
-            const index = isUnaryNumber
-              ? arg.operator === "+"
-                ? +arg.argument.value
-                : -arg.argument.value
-              : arg.value;
-            const replacement =
-              index >= 0
-                ? `[${index}]`
-                : `[${node.callee.object.name}.length - ${Math.abs(index)}]`;
-
-            message = `Use index-based access ${replacement} instead of '.at(${index})'`;
-            fix = (fixer) => {
-              return fixer.replaceText(
-                node,
-                `${node.callee.object.name}${replacement}`
-              );
-            };
-          } else {
-            message = "Use index-based access instead of '.at()'";
+            value =
+              argument.operator === "-"
+                ? -argument.argument.value
+                : +argument.argument.value;
+          } else if (
+            argument.type === "Literal" &&
+            typeof argument.value === "number"
+          ) {
+            value = argument.value;
           }
 
-          context.report({ node, message, fix });
+          let replacement;
+          if (value === undefined) {
+            replacement = `${objectText}[${context
+              .getSourceCode()
+              .getText(argument)}]`;
+          } else {
+            if (value >= 0) {
+              replacement = `${objectText}[${value}]`;
+            } else {
+              replacement = `${objectText}[${objectText}.length - ${Math.abs(
+                value
+              )}]`;
+            }
+          }
+
+          context.report({
+            node,
+            message: "Use array indexing instead of .at()",
+            fix(fixer) {
+              return fixer.replaceText(node, replacement);
+            },
+          });
         }
       },
     };
