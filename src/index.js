@@ -1,18 +1,25 @@
 module.exports = {
   configs: {
     all: {
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      env: {
+        browser: true,
+        node: false,
+      },
+      reportUnusedDisableDirectives: true,
       extends: [
         "eslint:recommended",
         "plugin:promise/recommended",
         "plugin:n/recommended",
-        "plugin:unicorn/recommended",
         "prettier",
       ],
       plugins: ["prettier", "grules"],
       rules: {
         "prettier/prettier": "error",
 
-        "grules/explicit-conditionals": "error",
         "grules/no-at-identifier": "error",
         "grules/no-charAt": "error",
         "grules/no-empty-string-compare": "error",
@@ -21,11 +28,6 @@ module.exports = {
 
         "n/prefer-global/buffer": ["error", "never"],
         "n/prefer-global/process": ["error", "never"],
-
-        "unicorn/prefer-at": "off",
-        "unicorn/prevent-abbreviations": "off",
-        "unicorn/no-abusive-eslint-disable": "off",
-        "unicorn/no-null": "off",
 
         "array-callback-return": ["error", { allowImplicit: true }],
         "no-await-in-loop": "warn",
@@ -144,10 +146,7 @@ module.exports = {
         "no-undefined": "error",
         "no-underscore-dangle": "error",
         "no-unneeded-ternary": "error",
-        "no-unused-expressions": [
-          "error",
-          { allowShortCircuit: true, allowTernary: true },
-        ],
+        "no-unused-expressions": "error",
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
         "no-useless-concat": "error",
@@ -155,7 +154,7 @@ module.exports = {
         "no-useless-rename": "error",
         "no-useless-return": "error",
         "no-void": "error",
-        "no-warning-comments": "off",
+        "no-warning-comments": "error",
         "object-shorthand": "error",
         "one-var": ["error", "consecutive"],
         "operator-assignment": ["error", "always"],
