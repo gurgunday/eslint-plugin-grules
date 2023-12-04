@@ -16,7 +16,7 @@ module.exports = {
         "plugin:n/recommended",
         "prettier",
       ],
-      plugins: ["prettier", "grules"],
+      plugins: ["prettier", "grules", "unicorn"],
       rules: {
         "prettier/prettier": "error",
 
