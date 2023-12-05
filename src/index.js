@@ -217,7 +217,7 @@ module.exports = {
         "no-multi-str": "error",
         "no-negated-condition": "off",
         "no-nested-ternary": "off",
-        "no-new": "error",
+        "no-new": "off",
         "no-new-func": "off",
         "no-new-wrappers": "error",
         "no-object-constructor": "error",
