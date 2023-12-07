@@ -2,7 +2,7 @@
   "name": "eslint-plugin-grules",
   "author": "Gürgün Dayıoğlu",
   "license": "MIT",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "type": "commonjs",
   "main": "./src/index.js",
   "exports": "./src/index.js",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",
-    "eslint-plugin-grules": "^0.0.15"
+    "eslint-plugin-grules": ">=0.0.15"
   },
   "repository": {
     "type": "git",
