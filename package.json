@@ -2,14 +2,15 @@
   "name": "eslint-plugin-grules",
   "author": "Gürgün Dayıoğlu",
   "license": "MIT",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "type": "commonjs",
   "main": "./src/index.js",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "test": "eslint ."
+    "test": "eslint .",
+    "test:fix": "eslint --fix ."
   },
   "dependencies": {
     "eslint": "^8.54.0",
