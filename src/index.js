@@ -44,11 +44,9 @@ module.exports = {
         ],
 
         // Conventions that might as well be considered language features
-        "no-duplicate-imports": "error",
+        "no-extend-native": "error",
         "no-new-native-nonconstructor": "error",
         "no-new-wrappers": "error",
-        "no-unmodified-loop-condition": "error",
-        "no-unreachable-loop": "error",
         "no-unused-private-class-members": "error",
         "class-methods-use-this": "error",
 
@@ -64,10 +62,10 @@ module.exports = {
         "no-alert": "error",
         "no-console": "error",
         "no-constant-binary-expression": "error",
+        "no-duplicate-imports": "error",
         "no-else-return": ["error", { allowElseIf: false }],
         "no-empty": ["error", { allowEmptyCatch: true }],
         "no-empty-static-block": "error",
-        "no-extend-native": "error",
         "no-extra-bind": "error",
         "no-array-constructor": "error",
         "no-object-constructor": "error",
@@ -75,6 +73,8 @@ module.exports = {
         "no-lonely-if": "error",
         "no-self-compare": "error",
         "no-unneeded-ternary": "error",
+        "no-unmodified-loop-condition": "error",
+        "no-unreachable-loop": "error",
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
         "no-useless-concat": "error",

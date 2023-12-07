@@ -275,7 +275,7 @@ const fixFunctionDeclaration = (src, node) => {
 
   if (omitVar) {
     const functionKeywordToken = tokens.find(
-      tokenMatcher("Keyword", "function")
+      tokenMatcher("Keyword", "function"),
     );
     const nameToken = src.getTokenAfter(functionKeywordToken);
     if (nameToken.type === "Identifier") {
@@ -364,7 +364,7 @@ const inspectNode = (node, context) => {
             if (node.async && node.parent.type === "MethodDefinition") {
               const parentTokens = src.getTokens(node.parent);
               const asyncToken = parentTokens.find(
-                tokenMatcher("Identifier", "async")
+                tokenMatcher("Identifier", "async"),
               );
               const nextToken = parentTokens.find((_, i, arr) => {
                 return arr[i - 1] && arr[i - 1] === asyncToken;
@@ -374,7 +374,7 @@ const inspectNode = (node, context) => {
                 fixer.replaceText(node, newText),
                 fixer.replaceTextRange(
                   [tokenStart(asyncToken), tokenStart(nextToken)],
-                  ""
+                  "",
                 ),
               ];
             }
@@ -390,7 +390,7 @@ const inspectNode = (node, context) => {
       node,
       isNamed(node)
         ? "Use const or class constructors instead of named functions"
-        : "Prefer using arrow functions over plain functions"
+        : "Prefer using arrow functions over plain functions",
     );
   }
 };
