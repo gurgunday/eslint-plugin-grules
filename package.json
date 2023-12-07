@@ -26,5 +26,8 @@
     "@fastify/pre-commit": "^2.1.0",
     "eslint-plugin-grules": "^0.0.15"
   },
-  "repository": "git+https://github.com/gurgunday/eslint-plugin-grules.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gurgunday/eslint-plugin-grules.git"
+  }
 }
