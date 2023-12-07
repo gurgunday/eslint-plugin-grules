@@ -5,6 +5,7 @@
   "version": "0.0.15",
   "type": "commonjs",
   "main": "./src/index.js",
+  "exports": "./src/index.js",
   "engines": {
     "node": ">=20"
   },
