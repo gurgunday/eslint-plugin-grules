@@ -2,9 +2,9 @@ module.exports = {
   meta: {
     fixable: "code",
   },
-  create: function (context) {
+  create: (context) => {
     return {
-      CallExpression(node) {
+      CallExpression: (node) => {
         if (
           node.callee.type === "MemberExpression" &&
           node.callee.property.name === "charAt"
@@ -12,21 +12,17 @@ module.exports = {
           const objectText = context
             .getSourceCode()
             .getText(node.callee.object);
-          const argument = node.arguments[0];
-          let replacement;
+          const [argument] = node.arguments;
 
-          if (argument && argument.type === "Literal") {
-            replacement = `${objectText}[${argument.raw}]`;
-          } else {
-            replacement = `${objectText}[${context
-              .getSourceCode()
-              .getText(argument)}]`;
-          }
+          const replacement =
+            argument && argument.type === "Literal"
+              ? `${objectText}[${argument.raw}]`
+              : `${objectText}[${context.getSourceCode().getText(argument)}]`;
 
           context.report({
             node,
             message: "Use bracket notation instead of .charAt()",
-            fix(fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(node, replacement);
             },
           });

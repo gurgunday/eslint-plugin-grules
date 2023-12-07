@@ -108,7 +108,6 @@ module.exports = {
         "grules/prefer-arrow-functions": "error",
         "grules/prefer-inc-dec": "error",
         "grules/prefer-index-access": "error",
-        "grules/prefer-string-length-comparison": "error",
 
         // Unicorn conventions
         "unicorn/better-regex": "error",
@@ -179,6 +178,5 @@ module.exports = {
     "prefer-explicit-conditionals": require("./rules/prefer-explicit-conditionals.js"),
     "prefer-inc-dec": require("./rules/prefer-inc-dec.js"),
     "prefer-index-access": require("./rules/prefer-index-access.js"),
-    "prefer-string-length-comparison": require("./rules/prefer-string-length-comparison.js"),
   },
 };

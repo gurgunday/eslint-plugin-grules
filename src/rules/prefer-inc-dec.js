@@ -9,7 +9,7 @@ module.exports = {
           context.report({
             node,
             message: "Use '++' instead of '+= 1'",
-            fix: function (fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(node, `++${node.left.name}`);
             },
           });

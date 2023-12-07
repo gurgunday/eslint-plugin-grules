@@ -2,9 +2,9 @@ module.exports = {
   meta: {
     fixable: "code",
   },
-  create: function (context) {
+  create: (context) => {
     return {
-      CallExpression(node) {
+      CallExpression: (node) => {
         if (
           node.callee.type === "MemberExpression" &&
           node.callee.property.name === "at" &&
@@ -12,45 +12,43 @@ module.exports = {
             node.callee.object.type === "MemberExpression")
         ) {
           const objectText = context
-              .getSourceCode()
-              .getText(node.callee.object),
-            argument = node.arguments[0];
-          let value;
+            .getSourceCode()
+            .getText(node.callee.object);
+          const [argument] = node.arguments;
+          let val;
 
           if (
             argument.type === "UnaryExpression" &&
             typeof argument.argument.value === "number"
           ) {
-            value =
+            val =
               argument.operator === "-"
                 ? -argument.argument.value
-                : +argument.argument.value;
+                : Number(argument.argument.value);
           } else if (
             argument.type === "Literal" &&
             typeof argument.value === "number"
           ) {
-            value = argument.value;
+            val = argument.value;
           }
 
           let replacement;
-          if (value === undefined) {
+          if (val === undefined) {
             replacement = `${objectText}[${context
               .getSourceCode()
               .getText(argument)}]`;
+          } else if (val >= 0) {
+            replacement = `${objectText}[${val}]`;
           } else {
-            if (value >= 0) {
-              replacement = `${objectText}[${value}]`;
-            } else {
-              replacement = `${objectText}[${objectText}.length - ${Math.abs(
-                value
-              )}]`;
-            }
+            replacement = `${objectText}[${objectText}.length - ${Math.abs(
+              val,
+            )}]`;
           }
 
           context.report({
             node,
             message: "Use array indexing instead of .at()",
-            fix(fixer) {
+            fix: (fixer) => {
               return fixer.replaceText(node, replacement);
             },
           });

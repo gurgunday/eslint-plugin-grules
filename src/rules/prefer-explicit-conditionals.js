@@ -1,4 +1,13 @@
-const comparisonOperators = ["==", "===", "!=", "!==", ">", "<", ">=", "<="];
+const comparisonOperators = new Set([
+  "==",
+  "===",
+  "!=",
+  "!==",
+  ">",
+  "<",
+  ">=",
+  "<=",
+]);
 
 const enforceExplicitComparisonRecursively = (context, node) => {
   if (node.type === "LogicalExpression") {
@@ -7,7 +16,7 @@ const enforceExplicitComparisonRecursively = (context, node) => {
   } else if (
     !(
       node.type === "BinaryExpression" &&
-      comparisonOperators.includes(node.operator) === true
+      comparisonOperators.has(node.operator) === true
     )
   ) {
     context.report({

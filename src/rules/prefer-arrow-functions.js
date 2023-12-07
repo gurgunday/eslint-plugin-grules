@@ -27,49 +27,15 @@
     SOFTWARE.
 */
 
-module.exports = {
-  meta: {
-    docs: {
-      description: "prefer arrow functions",
-      category: "emcascript6",
-      recommended: false,
-    },
-    fixable: "code",
-    schema: [
-      {
-        type: "object",
-        properties: {
-          disallowPrototype: {
-            type: "boolean",
-          },
-          singleReturnOnly: {
-            type: "boolean",
-          },
-          classPropertiesAllowed: {
-            type: "boolean",
-          },
-          allowStandaloneDeclarations: {
-            type: "boolean",
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-  },
-  create: (context) => ({
-    "FunctionDeclaration:exit": (node) => inspectNode(node, context),
-    "FunctionExpression:exit": (node) => inspectNode(node, context),
-  }),
-};
-
 const isPrototypeAssignment = (node) => {
-  let parent = node.parent;
+  let { parent } = node;
 
   while (parent) {
     switch (parent.type) {
       case "MemberExpression":
-        if (parent.property && parent.property.name === "prototype")
+        if (parent.property && parent.property.name === "prototype") {
           return true;
+        }
         parent = parent.object;
         break;
       case "AssignmentExpression":
@@ -77,7 +43,7 @@ const isPrototypeAssignment = (node) => {
         break;
       case "Property":
       case "ObjectExpression":
-        parent = parent.parent;
+        ({ parent } = parent.parent);
         break;
       default:
         return false;
@@ -88,135 +54,98 @@ const isPrototypeAssignment = (node) => {
 };
 
 const isConstructor = (node) => {
-  let parent = node.parent;
+  const { parent } = node;
   return parent && parent.kind === "constructor";
 };
 
 const containsThis = (node) => {
-  if (typeof node !== "object" || node === null) return false;
-  if (node.type === "FunctionDeclaration") return false;
-  if (node.type === "FunctionExpression") return false;
-  if (node.type === "ThisExpression") return true;
+  if (typeof node !== "object" || node === null) {
+    return false;
+  }
+  if (node.type === "FunctionDeclaration") {
+    return false;
+  }
+  if (node.type === "FunctionExpression") {
+    return false;
+  }
+  if (node.type === "ThisExpression") {
+    return true;
+  }
   return Object.keys(node).some((field) => {
     if (field === "parent") {
       return false;
-    } else if (Array.isArray(node[field])) {
+    }
+    if (Array.isArray(node[field])) {
       return node[field].some(containsThis);
     }
     return containsThis(node[field]);
   });
 };
 
-const isNamed = (node) =>
-  node.type === "FunctionDeclaration" && node.id && node.id.name;
-
-const functionOnlyContainsReturnStatement = (node) =>
-  node.body.body.length === 1 && node.body.body[0].type === "ReturnStatement";
-
-const isNamedDefaultExport = (node) =>
-  node.id && node.id.name && node.parent.type === "ExportDefaultDeclaration";
-
-const isClassMethod = (node) => node.parent.type === "MethodDefinition";
-
-const isGeneratorFunction = (node) => node.generator === true;
-
-const isGetterOrSetter = (node) =>
-  node.parent.kind === "set" || node.parent.kind === "get";
-
-const isCommonJSModuleProp = (node, name = "module") =>
-  node &&
-  node.type === "MemberExpression" &&
-  node.object &&
-  node.object.type === "Identifier" &&
-  node.object.name === name;
-
-const isModuleExport = (node) =>
-  node.parent.type === "AssignmentExpression" &&
-  (isCommonJSModuleProp(node.parent.left) ||
-    isCommonJSModuleProp(node.parent.left, "exports") ||
-    isCommonJSModuleProp(node.parent.left.object));
-
-const isStandaloneDeclaration = (node) =>
-  node.type === "FunctionDeclaration" &&
-  (!node.parent ||
-    node.parent.type === "Program" ||
-    node.parent.type === "ExportNamedDeclaration" ||
-    node.parent.type === "ExportDefaultDeclaration");
-
-const inspectNode = (node, context) => {
-  const opts = context.options[0] || {};
-
-  if (isConstructor(node)) return;
-  if (
-    !isClassMethod(node) &&
-    (containsThis(node.params) || containsThis(node.body))
-  )
-    return;
-  if (isGeneratorFunction(node)) return;
-  if (isGetterOrSetter(node)) return;
-  if (isClassMethod(node) && !opts.classPropertiesAllowed) return;
-  if (
-    opts.allowStandaloneDeclarations &&
-    (isStandaloneDeclaration(node) || isModuleExport(node))
-  )
-    return;
-
-  if (opts.singleReturnOnly) {
-    if (
-      functionOnlyContainsReturnStatement(node) &&
-      !isNamedDefaultExport(node) &&
-      (opts.classPropertiesAllowed || !isClassMethod(node))
-    )
-      return context.report({
-        node,
-        message:
-          "Prefer using arrow functions over plain functions which only return a value",
-        fix(fixer) {
-          const src = context.getSourceCode();
-          let newText = null;
-          if (node.type === "FunctionDeclaration") {
-            newText = fixFunctionDeclaration(src, node);
-          } else if (node.type === "FunctionExpression") {
-            newText = fixFunctionExpression(src, node);
-
-            // In the case of an async method definition, we remove the "async" prefix
-            if (node.async && node.parent.type === "MethodDefinition") {
-              const parentTokens = src.getTokens(node.parent);
-              const asyncToken = parentTokens.find(
-                tokenMatcher("Identifier", "async")
-              );
-              const nextToken = parentTokens.find(
-                (_, i, arr) => arr[i - 1] && arr[i - 1] === asyncToken
-              );
-
-              return [
-                fixer.replaceText(node, newText),
-                fixer.replaceTextRange(
-                  [tokenStart(asyncToken), tokenStart(nextToken)],
-                  ""
-                ),
-              ];
-            }
-          }
-          if (newText !== null) {
-            return fixer.replaceText(node, newText);
-          }
-        },
-      });
-  } else if (opts.disallowPrototype || !isPrototypeAssignment(node)) {
-    return context.report(
-      node,
-      isNamed(node)
-        ? "Use const or class constructors instead of named functions"
-        : "Prefer using arrow functions over plain functions"
-    );
-  }
+const isNamed = (node) => {
+  return node.type === "FunctionDeclaration" && node.id && node.id.name;
 };
 
-const tokenStart = (token) =>
-  token.start === undefined ? token.range[0] : token.start;
-const tokenEnd = (token) =>
-  token.end === undefined ? token.range[1] : token.end;
+const functionOnlyContainsReturnStatement = (node) => {
+  return (
+    node.body.body.length === 1 && node.body.body[0].type === "ReturnStatement"
+  );
+};
+
+const isNamedDefaultExport = (node) => {
+  return (
+    node.id && node.id.name && node.parent.type === "ExportDefaultDeclaration"
+  );
+};
+
+const isClassMethod = (node) => {
+  return node.parent.type === "MethodDefinition";
+};
+
+const isGeneratorFunction = (node) => {
+  return node.generator === true;
+};
+
+const isGetterOrSetter = (node) => {
+  return node.parent.kind === "set" || node.parent.kind === "get";
+};
+
+const isCommonJSModuleProp = (node, name = "module") => {
+  return (
+    node &&
+    node.type === "MemberExpression" &&
+    node.object &&
+    node.object.type === "Identifier" &&
+    node.object.name === name
+  );
+};
+
+const isModuleExport = (node) => {
+  return (
+    node.parent.type === "AssignmentExpression" &&
+    (isCommonJSModuleProp(node.parent.left) ||
+      isCommonJSModuleProp(node.parent.left, "exports") ||
+      isCommonJSModuleProp(node.parent.left.object))
+  );
+};
+
+const isStandaloneDeclaration = (node) => {
+  return (
+    node.type === "FunctionDeclaration" &&
+    (!node.parent ||
+      node.parent.type === "Program" ||
+      node.parent.type === "ExportNamedDeclaration" ||
+      node.parent.type === "ExportDefaultDeclaration")
+  );
+};
+
+const tokenStart = (token) => {
+  return token.start === undefined ? token.range[0] : token.start;
+};
+
+const tokenEnd = (token) => {
+  return token.end === undefined ? token.range[1] : token.end;
+};
 
 const replaceTokens = (origSource, tokens, replacements) => {
   let removeNextLeadingSpace = false;
@@ -225,9 +154,9 @@ const replaceTokens = (origSource, tokens, replacements) => {
 
   for (const token of tokens) {
     if (lastTokenEnd >= 0) {
-      let between = origSource.substring(lastTokenEnd, tokenStart(token));
+      let between = origSource.slice(lastTokenEnd, tokenStart(token));
       if (removeNextLeadingSpace) {
-        between = between.replace(/^\s+/, "");
+        between = between.replace(/^\s+/u, "");
       }
       result += between;
     }
@@ -235,30 +164,33 @@ const replaceTokens = (origSource, tokens, replacements) => {
     if (tokenStart(token) in replacements) {
       const replaceInfo = replacements[tokenStart(token)];
       if (replaceInfo[2]) {
-        result = result.replace(/\s+$/, "");
+        result = result.replace(/\s+$/u, "");
       }
       result += replaceInfo[0];
-      removeNextLeadingSpace = !!replaceInfo[1];
+      removeNextLeadingSpace = Boolean(replaceInfo[1]);
     } else {
-      result += origSource.substring(tokenStart(token), tokenEnd(token));
+      result += origSource.slice(tokenStart(token), tokenEnd(token));
     }
     lastTokenEnd = tokenEnd(token);
   }
   return result;
 };
 
-const tokenMatcher =
-  (type, value = undefined) =>
-  (token) =>
-    token.type === type &&
-    (typeof value === "undefined" || token.value === value);
+const tokenMatcher = (type, value) => {
+  return (token) => {
+    return (
+      token.type === type &&
+      (typeof value === "undefined" || token.value === value)
+    );
+  };
+};
 
 const fixFunctionExpression = (src, node) => {
   const orig = src.getText();
   const tokens = src.getTokens(node);
   const bodyTokens = src.getTokens(node.body);
 
-  let swap = {};
+  const swap = {};
   const fnKeyword = tokens.find(tokenMatcher("Keyword", "function"));
   let prefix = "";
   let suffix = "";
@@ -293,15 +225,16 @@ const fixFunctionExpression = (src, node) => {
     true,
   ];
 
-  const returnRange = node.body.body.find(
-    (n) => n.type === "ReturnStatement"
-  ).range;
-  const semicolon = bodyTokens.find(
-    (t) =>
-      tokenEnd(t) == returnRange[1] &&
+  const returnRange = node.body.body.find((n) => {
+    return n.type === "ReturnStatement";
+  }).range;
+  const semicolon = bodyTokens.find((t) => {
+    return (
+      tokenEnd(t) === returnRange[1] &&
       t.value === ";" &&
       t.type === "Punctuator"
-  );
+    );
+  });
   if (semicolon) {
     swap[tokenStart(semicolon)] = [parens ? ")" : "", true];
   }
@@ -311,7 +244,7 @@ const fixFunctionExpression = (src, node) => {
   swap[tokenStart(lastCloseBrace)] = ["", false, true];
   return (
     prefix +
-    replaceTokens(orig, tokens, swap).replace(/ $/, "") +
+    replaceTokens(orig, tokens, swap).replace(/ $/u, "") +
     (parens && !semicolon ? ")" : "") +
     suffix
   );
@@ -321,7 +254,7 @@ const fixFunctionDeclaration = (src, node) => {
   const orig = src.getText();
   const tokens = src.getTokens(node);
   const bodyTokens = src.getTokens(node.body);
-  let swap = {};
+  const swap = {};
   const asyncKeyword = node.async ? "async " : "";
   const omitVar =
     node.parent && node.parent.type === "ExportDefaultDeclaration";
@@ -358,15 +291,16 @@ const fixFunctionDeclaration = (src, node) => {
     true,
   ];
 
-  const returnRange = node.body.body.find(
-    (n) => n.type === "ReturnStatement"
-  ).range;
-  const semicolon = bodyTokens.find(
-    (t) =>
-      tokenEnd(t) == returnRange[1] &&
+  const returnRange = node.body.body.find((n) => {
+    return n.type === "ReturnStatement";
+  }).range;
+  const semicolon = bodyTokens.find((t) => {
+    return (
+      tokenEnd(t) === returnRange[1] &&
       t.value === ";" &&
       t.type === "Punctuator"
-  );
+    );
+  });
   if (semicolon) {
     swap[tokenStart(semicolon)] = [parens ? ")" : "", true];
   }
@@ -375,7 +309,129 @@ const fixFunctionDeclaration = (src, node) => {
   const lastCloseBrace = closeBraces[closeBraces.length - 1];
   swap[tokenStart(lastCloseBrace)] = ["", false, true];
   return (
-    replaceTokens(orig, tokens, swap).replace(/ $/, "") +
+    replaceTokens(orig, tokens, swap).replace(/ $/u, "") +
     (parens && !semicolon ? ");" : ";")
   );
+};
+
+const inspectNode = (node, context) => {
+  const opts = context.options[0] || {};
+
+  if (isConstructor(node)) {
+    return;
+  }
+  if (
+    !isClassMethod(node) &&
+    (containsThis(node.params) || containsThis(node.body))
+  ) {
+    return;
+  }
+  if (isGeneratorFunction(node)) {
+    return;
+  }
+  if (isGetterOrSetter(node)) {
+    return;
+  }
+  if (isClassMethod(node) && !opts.classPropertiesAllowed) {
+    return;
+  }
+  if (
+    opts.allowStandaloneDeclarations &&
+    (isStandaloneDeclaration(node) || isModuleExport(node))
+  ) {
+    return;
+  }
+
+  if (opts.singleReturnOnly) {
+    if (
+      functionOnlyContainsReturnStatement(node) &&
+      !isNamedDefaultExport(node) &&
+      (opts.classPropertiesAllowed || !isClassMethod(node))
+    ) {
+      return context.report({
+        node,
+        message:
+          "Prefer using arrow functions over plain functions which only return a value",
+        fix: (fixer) => {
+          const src = context.getSourceCode();
+          let newText = null;
+          if (node.type === "FunctionDeclaration") {
+            newText = fixFunctionDeclaration(src, node);
+          } else if (node.type === "FunctionExpression") {
+            newText = fixFunctionExpression(src, node);
+
+            // In the case of an async method definition, we remove the "async" prefix
+            if (node.async && node.parent.type === "MethodDefinition") {
+              const parentTokens = src.getTokens(node.parent);
+              const asyncToken = parentTokens.find(
+                tokenMatcher("Identifier", "async")
+              );
+              const nextToken = parentTokens.find((_, i, arr) => {
+                return arr[i - 1] && arr[i - 1] === asyncToken;
+              });
+
+              return [
+                fixer.replaceText(node, newText),
+                fixer.replaceTextRange(
+                  [tokenStart(asyncToken), tokenStart(nextToken)],
+                  ""
+                ),
+              ];
+            }
+          }
+          if (newText !== null) {
+            return fixer.replaceText(node, newText);
+          }
+        },
+      });
+    }
+  } else if (opts.disallowPrototype || !isPrototypeAssignment(node)) {
+    return context.report(
+      node,
+      isNamed(node)
+        ? "Use const or class constructors instead of named functions"
+        : "Prefer using arrow functions over plain functions"
+    );
+  }
+};
+
+module.exports = {
+  meta: {
+    docs: {
+      description: "prefer arrow functions",
+      category: "emcascript6",
+      recommended: false,
+    },
+    fixable: "code",
+    schema: [
+      {
+        type: "object",
+        properties: {
+          disallowPrototype: {
+            type: "boolean",
+          },
+          singleReturnOnly: {
+            type: "boolean",
+          },
+          classPropertiesAllowed: {
+            type: "boolean",
+          },
+          allowStandaloneDeclarations: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
+  },
+  create: (context) => {
+    return {
+      "FunctionDeclaration:exit": (node) => {
+        return inspectNode(node, context);
+      },
+      "FunctionExpression:exit": (node) => {
+        return inspectNode(node, context);
+      },
+    };
+  },
 };
