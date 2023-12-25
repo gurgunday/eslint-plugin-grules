@@ -2,12 +2,12 @@
   "name": "eslint-plugin-grules",
   "author": "Gürgün Dayıoğlu",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "commonjs",
   "main": "./src/index.js",
   "exports": "./src/index.js",
   "dependencies": {
-    "grules": ">=0.0.7"
+    "grules": ">=0.1.0"
   },
   "repository": {
     "type": "git",
