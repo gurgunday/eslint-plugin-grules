@@ -1,1 +1,1 @@
-module.exports = require("grules");
+export { default } from "grules";
